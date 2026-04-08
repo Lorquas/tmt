@@ -5,6 +5,7 @@ from typing import Any, Optional
 
 import tmt.utils
 from tmt.container import PYDANTIC_V1, ConfigDict, MetadataContainer
+from tmt.guest import TransferOptions
 from tmt.package_managers import (
     Installable,
     Options,
@@ -258,8 +259,18 @@ class Bootc(PackageManager[BootcEngine]):
                         ')"'
                     )
                 )
-                self.guest.execute(
-                    ShellScript(f'cat <<EOF > {containerfile_path!s} \n{containerfile} \nEOF')
+                # Write Containerfile via push() to avoid exceeding
+                # the OS ARG_MAX limit on the SSH command line.
+                assert self.workdir is not None
+                local_containerfile = self.workdir / 'Containerfile'
+                local_containerfile.write_text(containerfile)
+                self.guest.push(
+                    source=local_containerfile,
+                    destination=containerfile_path,
+                    options=TransferOptions(
+                        recursive=False,
+                        compress=True,
+                    ),
                 )
 
                 self.debug(f"containerfile content: {containerfile}")

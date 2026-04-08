@@ -308,8 +308,14 @@ class PackageManagerEngine(tmt.utils.Common):
     command: Command
     options: Command
 
-    def __init__(self, *, guest: 'Guest', logger: tmt.log.Logger) -> None:
-        super().__init__(logger=logger)
+    def __init__(
+        self,
+        *,
+        guest: 'Guest',
+        parent: Optional['tmt.utils.Common'] = None,
+        logger: tmt.log.Logger,
+    ) -> None:
+        super().__init__(parent=parent, logger=logger)
 
         self.guest = guest
 
@@ -439,10 +445,16 @@ class PackageManager(tmt.utils.Common, Generic[PackageManagerEngineT]):
     #: may be installed togethers, and therefore a priority is needed.
     probe_priority: int = 0
 
-    def __init__(self, *, guest: 'Guest', logger: tmt.log.Logger) -> None:
-        super().__init__(logger=logger)
+    def __init__(
+        self,
+        *,
+        guest: 'Guest',
+        parent: Optional['tmt.utils.Common'] = None,
+        logger: tmt.log.Logger,
+    ) -> None:
+        super().__init__(parent=parent, logger=logger)
 
-        self.engine = self._engine_class(guest=guest, logger=logger)
+        self.engine = self._engine_class(guest=guest, parent=parent, logger=logger)
 
         self.guest = guest
 

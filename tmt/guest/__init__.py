@@ -1797,7 +1797,7 @@ class Guest(
             )
 
         return tmt.package_managers.find_package_manager(self.facts.package_manager)(
-            guest=self, logger=self._logger
+            guest=self, parent=self, logger=self._logger
         )
 
     @functools.cached_property
@@ -1808,7 +1808,7 @@ class Guest(
             raise tmt.utils.GeneralError(f"Bootc builder was not detected on guest '{self.name}'.")
 
         return tmt.package_managers.find_package_manager(self.facts.bootc_builder)(
-            guest=self, logger=self._logger
+            guest=self, parent=self, logger=self._logger
         )
 
     @functools.cached_property
